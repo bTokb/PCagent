@@ -8,6 +8,7 @@ from loguru import logger
 
 from app.config import config
 from app.services.vector_store_manager import vector_store_manager
+#from app.services.vector_search_service import vector_search_service
 
 
 @tool(response_format="content_and_artifact")
@@ -24,15 +25,13 @@ def retrieve_knowledge(query: str) -> Tuple[str, List[Document]]:
     """
     try:
         logger.info(f"知识检索工具被调用: query='{query}'")
-        
-        # 从向量存储中检索相关文档
         vector_store = vector_store_manager.get_vector_store()
         retriever = vector_store.as_retriever(
             search_kwargs={"k": config.rag_top_k}
         )
-        
+
         docs = retriever.invoke(query)
-        
+        # docs=vector_search_service.search_similar_documents(query)
         if not docs:
             logger.warning("未检索到相关文档")
             return "没有找到相关信息。", []
@@ -43,9 +42,16 @@ def retrieve_knowledge(query: str) -> Tuple[str, List[Document]]:
         logger.info(f"检索到 {len(docs)} 个相关文档")
         return context, docs
         
+    # except Exception as e:
+    #     logger.error(f"知识检索工具调用失败: {e}")
+    #     return f"检索知识时发生错误: {str(e)}", []
     except Exception as e:
-        logger.error(f"知识检索工具调用失败: {e}")
-        return f"检索知识时发生错误: {str(e)}", []
+        # 将 error 改为 exception，它会在终端打印出完整的报错堆栈（Traceback）
+        logger.exception("知识检索工具调用失败，详细异常堆栈如下：")
+
+        # 在返回给用户的文本中，加上异常的具体类型（例如 ConnectionRefusedError），方便排查
+        error_type = type(e).__name__
+        return f"检索知识时发生错误 [{error_type}]: {str(e)}", []
 
 
 def format_docs(docs: List[Document]) -> str:

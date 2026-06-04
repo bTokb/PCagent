@@ -21,18 +21,27 @@ class VectorStoreManager:
         """初始化向量存储管理器"""
         self.vector_store = None
         self.collection_name = COLLECTION_NAME
-        self._initialize_vector_store()
+        #self._initialize_vector_store()
 
     def _initialize_vector_store(self):
         """初始化 Milvus VectorStore"""
+        if self.vector_store is not None:
+            return
         try:
+            # === 步骤 1：让核心客户端准备好 "default" 连接和数据表 ===
+            from app.core.milvus_client import milvus_manager
+            if not milvus_manager.health_check():
+                milvus_manager.connect()
+
+            # === 步骤 2：配置 LangChain 的连接参数 ===
+            # ★ 终极修复：必须强制指定 alias 为 "default" ★
+            # 这样就会完美绕过 langchain-milvus 自动生成 cm-xxxx 别名的多线程 Bug！
             connection_args = {
-                "host": config.milvus_host,
-                "port": config.milvus_port,
+                "uri": f"http://{config.milvus_host}:{config.milvus_port}",
+                "alias": "default",
             }
 
-            # 创建 LangChain Milvus VectorStore
-            # 使用 biz collection，字段映射：text_field -> content, vector_field -> vector
+            # === 步骤 3：创建 LangChain Milvus 实例 ===
             self.vector_store = Milvus(
                 embedding_function=vector_embedding_service,
                 collection_name=self.collection_name,
@@ -46,7 +55,7 @@ class VectorStoreManager:
             )
 
             logger.info(
-                f"VectorStore 初始化成功: {config.milvus_host}:{config.milvus_port}, "
+                f"VectorStore 初始化成功（已强制绑定 default 稳定连接）, "
                 f"collection: {self.collection_name}"
             )
 
@@ -64,6 +73,7 @@ class VectorStoreManager:
         Returns:
             List[str]: 文档 ID 列表
         """
+        self._initialize_vector_store()
         try:
             import time
             import uuid
@@ -102,6 +112,7 @@ class VectorStoreManager:
             collection = milvus_manager.get_collection()
 
             # metadata 是 JSON 字段，使用 JSON 路径查询语法
+
             # _source 是文档的来源文件路径
             expr = f'metadata["_source"] == "{file_path}"'
 
@@ -122,6 +133,7 @@ class VectorStoreManager:
         Returns:
             Milvus: VectorStore 实例
         """
+        self._initialize_vector_store()
         return self.vector_store
 
     def similarity_search(self, query: str, k: int = 3) -> List[Document]:
@@ -135,6 +147,7 @@ class VectorStoreManager:
         Returns:
             List[Document]: 相关文档列表
         """
+        self._initialize_vector_store()
         try:
             docs = self.vector_store.similarity_search(query, k=k)
             logger.debug(f"相似度搜索完成: query='{query}', 结果数={len(docs)}")

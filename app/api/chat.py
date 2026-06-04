@@ -41,7 +41,7 @@ async def chat(request: ChatRequest):
         )
 
         logger.info(f"[会话 {request.id}] 快速对话完成")
-
+#给前端的格式化字符串
         return {
             "code": 200,
             "message": "success",
@@ -71,7 +71,7 @@ async def chat_stream(request: ChatRequest):
 
     返回 SSE 格式，data 字段为 JSON：
 
-    工具调用事件:
+        工具调用事件:
     event: message
     data: {"type":"tool_call","data":{"tool":"工具名","status":"start|end","input":{...}}}
 

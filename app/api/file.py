@@ -19,7 +19,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
 
 @router.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...)):  #一次传入一个文件
     """
     上传文件并自动创建向量索引
 
@@ -98,7 +98,7 @@ async def upload_file(file: UploadFile = File(...)):
 
 
 @router.post("/index_directory")
-async def index_directory(directory_path: str = None):
+async def index_directory(directory_path: str = None):#一次传入很多文件
     """
     索引指定目录下的所有文件
 

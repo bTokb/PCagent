@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"👋 {config.app_name} 关闭")
 
 
-# 创建 FastAPI 应用
+# 创建 FastAPI 应用 感觉就是前端界面的设置
 app = FastAPI(
     title=config.app_name,
     version=config.app_version,
@@ -67,7 +67,7 @@ app.include_router(aiops.router, prefix="/api", tags=["AIOps智能运维"])
 # 挂载静态文件
 static_dir = "static"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
+#访问http://localhost:9900时，会加上后缀static\index.html，访问的第二个方法
 @app.get("/")
 async def root():
     """返回首页"""
@@ -83,7 +83,8 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    
+
+    # 这样可以右键直接运行就行，不用在命令行里面输入参数。
     uvicorn.run(
         "app.main:app",
         host=config.host,

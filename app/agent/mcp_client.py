@@ -113,8 +113,6 @@ async def get_mcp_client(
         )
         # 不再需要 __aenter__()，直接返回即可
         return client
-    
-    # 单例模式：如果已存在，直接返回
     if _mcp_client is None:
         logger.info("初始化全局 MCP 客户端...")
         _mcp_client = _create_mcp_client(

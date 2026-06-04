@@ -1,6 +1,9 @@
 """腾讯云 CLS (Cloud Log Service) MCP Server
 
 本地实现的 CLS 日志服务 MCP Server，提供日志查询、检索和分析功能。
+@mcp.tool()mcp像大模型暴露工具
+@log_tool_call 自动运行日志，在执行前通过wrapper打印函数名字，传入参数。执行后打印函数执行状态。
+这个文件是用来获取指定时间之间的日志的。
 """
 
 import logging
@@ -81,7 +84,7 @@ def parse_time_or_default(time_str: Optional[str], default_offset_hours: int = 0
     """
     if time_str:
         try:
-            return datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
+            return datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")#strptime指的是以后面的标准执行
         except ValueError:
             pass
     return datetime.now() + timedelta(hours=default_offset_hours)

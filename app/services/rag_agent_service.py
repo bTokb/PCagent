@@ -2,6 +2,10 @@
 
 使用 langchain_qwq 的 ChatQwen 原生集成，
 支持真正的流式输出和更好的模型适配。
+AgentState{修剪消息历史}
+类ragRagAgentService{ __init__ :
+_initialize_agent , _build_system_prompt query , query ,
+query_stream , getssion_histoy , clear_seeion , cleanuo}
 """
 
 from typing import Annotated, Any, AsyncGenerator, Dict, Sequence

@@ -1,4 +1,8 @@
-"""文档分割服务模块 - 基于 LangChain 的智能文档分割"""
+"""文档分割服务模块 - 基于 LangChain 的智能文档分割
+1分markdown文件 按照一二级标题划分 再二次划分防止有过大的 不过这次的分割区域很大了
+2分是按照标准的二倍size分
+
+"""
 
 from pathlib import Path
 from typing import List
