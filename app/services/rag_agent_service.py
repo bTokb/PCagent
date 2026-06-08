@@ -35,7 +35,7 @@ from app.agent.mcp_client import get_mcp_client_with_retry
 class AgentState(TypedDict):
     """Agent 状态"""
     messages: Annotated[Sequence[BaseMessage], add_messages]
-
+messages: Annotated[Sequence[BaseMessage], add_messages]
 
 def trim_messages_middleware(state: AgentState) -> dict[str, Any] | None:
     """
